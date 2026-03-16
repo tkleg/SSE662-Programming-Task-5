@@ -31,10 +31,10 @@ fn main() {
     }
 
     let cipher : String = "0xexcellentParade".to_string();
-    let encryptedContents : String = encrpyt(inputFileContents.clone(), cipher.clone());
-    let unencryptedContents : String = encrpyt(encryptedContents.clone(), cipher.clone());
+    let encryptedContents : Vec<u8> = encrpyt(inputFileContents.as_bytes(), cipher.as_bytes());
+    let unencryptedContents : Vec<u8> = encrpyt(&encryptedContents, cipher.as_bytes());
 
-    if unencryptedContents == inputFileContents {
+    if unencryptedContents == inputFileContents.as_bytes() {
         println!("Encryption and decryption successful. Unencrypted contents match original contents.");
     } else {
         println!("Encryption and decryption failed. Unencrypted contents do not match original contents.");
@@ -42,12 +42,12 @@ fn main() {
 
 }
 
-fn encrpyt(text : String, key: String) -> String {
-    let cipher : Vec<char> = key.chars().collect();
-    let encryptedContents : Vec<char> = text.chars().enumerate().map(|(i, c)| {
+fn encrpyt(text : &[u8], key: &[u8]) -> Vec<u8> {
+    let cipher : Vec<u8> = key.to_vec();
+    let encryptedContents : Vec<u8> = text.iter().enumerate().map(|(i, &c)| {
         let cipherChar = cipher[i % cipher.len()];
         let encryptedChar = (c as u8) ^ (cipherChar as u8);
-        encryptedChar as char
+        encryptedChar as u8
     }).collect();
     encryptedContents.into_iter().collect()
 }
