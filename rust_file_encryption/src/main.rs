@@ -1,5 +1,6 @@
 use std::io::{self, Result, stdin, Write, Seek, SeekFrom, Read};
 use std::fs::{self, File, OpenOptions};
+mod encrypt;
 
 fn main() {
     let input_file_contents_result = get_input_file_contents();
@@ -30,8 +31,8 @@ fn main() {
     }
 
     let cipher : String = "0xexcellentParade".to_string();
-    let encrypted_contents : Vec<u8> = encrpyt(input_file_contents.as_bytes(), cipher.as_bytes());
-    let unencrypted_contents : Vec<u8> = encrpyt(&encrypted_contents, cipher.as_bytes());
+    let encrypted_contents : Vec<u8> = encrypt::encrypt(input_file_contents.as_bytes(), cipher.as_bytes());
+    let unencrypted_contents : Vec<u8> = encrypt::encrypt(&encrypted_contents, cipher.as_bytes());
 
     if unencrypted_contents == input_file_contents.as_bytes() {
         println!("Encryption and decryption successful. Unencrypted string match original contents.\nThis is prior to writing and reading from the output file.\n");
@@ -68,7 +69,7 @@ fn main() {
         }
     }
 
-    let unencrypted_output_contents : Vec<u8> = encrpyt(&output_file_contents, cipher.as_bytes());
+    let unencrypted_output_contents : Vec<u8> = encrypt::encrypt(&output_file_contents, cipher.as_bytes());
     if unencrypted_output_contents == input_file_contents.as_bytes() {
         println!("Encryption and decryption successful. Unencrypted string match original contents.\nThis is after writing and reading from the output file.\n");
     } else {
@@ -78,16 +79,6 @@ fn main() {
 
 
 
-}
-
-fn encrpyt(text : &[u8], key: &[u8]) -> Vec<u8> {
-    let cipher : Vec<u8> = key.to_vec();
-    let encrypted_contents : Vec<u8> = text.iter().enumerate().map(|(i, &c)| {
-        let cipher_char = cipher[i % cipher.len()];
-        let encrypted_char = (c as u8) ^ (cipher_char as u8);
-        encrypted_char as u8
-    }).collect();
-    encrypted_contents
 }
 
 fn create_output_file() -> Result<File> {
