@@ -1,11 +1,7 @@
 pub fn encrypt(text : &[u8], key: &[u8]) -> Vec<u8> {
-    let cipher : Vec<u8> = key.to_vec();
-    let encrypted_contents : Vec<u8> = text.iter().enumerate().map(|(i, &c)| {
-        let cipher_char = cipher[i % cipher.len()];
-        let encrypted_char = (c as u8) ^ (cipher_char as u8);
-        encrypted_char as u8
-    }).collect();
-    encrypted_contents
+    text.iter().enumerate().map(|(i, &c)| {
+        c ^ key[i % key.len()]
+    }).collect()
 }
 
 #[cfg(test)]
@@ -33,6 +29,15 @@ mod tests {
     fn test_encrypt_with_short_key() {
         let text = b"abcdefg";
         let key = b"k";
+        let encrypted = encrypt(text, key);
+        let decrypted = encrypt(&encrypted, key);
+        assert_eq!(decrypted, text);
+    }
+
+    #[test]
+    fn test_encrypt_with_long_text() {
+        let text = b"piughutewrbcipuwqewfvyighewbfvyunjeqiwbgvyrbfvuy4eryubgv3trbv40uqwbf807gbvru0ebgve8r92hgv4r9ueoi2nv3rhbvoiseqwnviuo3b2neufbvouewbguifwqask;lwbtv-9ugb";
+        let key = b"fejifbvfouiec";
         let encrypted = encrypt(text, key);
         let decrypted = encrypt(&encrypted, key);
         assert_eq!(decrypted, text);
