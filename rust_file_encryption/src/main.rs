@@ -1,14 +1,14 @@
-use std::io;
-use std::fs::File;
-use std::str;
+use std::io::{self, Error, Result, stdin};
+use std::fs::{self, File};
+use std::str::Chars;
 
 fn main() {
-    let inputFileResult = getInputFile();
-    let inputFile : File;
-    match inputFileResult {
+    let inputFileContentsResult = getInputFileContents();
+    let inputFileContents : String;
+    match inputFileContentsResult {
         Ok(f) => {
-            inputFile = f;
-            println!("File opened successfully: {:?}", inputFile);
+            inputFileContents = f;
+            println!("File opened successfully: {:?}", inputFileContents);
         }
         Err(e) => {
             println!("Error opening file: {}. Exiting program.", e);
@@ -16,9 +16,9 @@ fn main() {
         }
     }
 
-    let cipher : str::Chars = "0xexcellentParade".chars();
+    let cipher : Chars = "0xexcellentParade".chars();
 
-    let outputFileResult = getOutputFile();
+    let outputFileResult = createOutputFile();
     let outputFile : File;
 
     match outputFileResult {
@@ -33,10 +33,10 @@ fn main() {
     }
 }
 
-fn getOutputFile() -> Result<File, io::Error> {
+fn createOutputFile() -> io::Result<File> {
     let mut outputFilePath = String::from("data/encrypted/");
     println!("Enter path for output file. Note that paths start from data/encrypted/:");
-    let outputFilePathResult : io::Result<usize> = io::stdin().read_line(&mut outputFilePath);
+    let outputFilePathResult : io::Result<usize> = stdin().read_line(&mut outputFilePath);
     match outputFilePathResult {
         Ok(_) => {
             println!("Output File Path: {}", outputFilePath.trim());
@@ -47,22 +47,22 @@ fn getOutputFile() -> Result<File, io::Error> {
         }
     }
 
-    let f2 : File = match File::create(outputFilePath.trim()) {
+    match File::create(outputFilePath.trim()) {
         Ok(file) => {
-            println!("getOutputFile created file with path {} successfully", outputFilePath.trim());
-            return Ok(file);
+            println!("createOutputFile created file with path {} successfully", outputFilePath.trim());
+            Ok(file)
         }
         Err(e) => {
-            println!("getOutputFile cannot create file with path {}: {}", outputFilePath.trim(), e);
-            return Err(e);
+            println!("createOutputFile cannot create file with path {}: {}", outputFilePath.trim(), e);
+            Err(e)
         }
-    };
+    }
 }
 
-fn getInputFile() -> Result<File, io::Error> {
+fn getInputFileContents() -> io::Result<String> {
     let mut inputFilePath = String::from("data/raw/");
     println!("Enter path for file one. Note that paths start from data/raw/:");
-    let inputFilePathResult : io::Result<usize> = io::stdin().read_line(&mut inputFilePath);
+    let inputFilePathResult : io::Result<usize> = stdin().read_line(&mut inputFilePath);
     match inputFilePathResult {
         Ok(_) => {
             println!("File Path: {}", inputFilePath.trim());
@@ -73,14 +73,14 @@ fn getInputFile() -> Result<File, io::Error> {
         }
     }
 
-    let f1 : File = match File::open(inputFilePath.trim()) {
-        Ok(file) => {
-            println!("getInputFile opened file with path {} successfully", inputFilePath.trim());
-            return Ok(file);
+    match fs::read_to_string(inputFilePath.trim()) {
+        Ok(content) => {
+            println!("getInputFileContents opened file with path {} successfully", inputFilePath.trim());
+            Ok(content)
         }
         Err(e) => {
-            println!("getInputFile cannot open file with path {}: {}", inputFilePath.trim(), e);
-            return Err(e);
+            println!("getInputFileContents cannot open file with path {}: {}", inputFilePath.trim(), e);
+            Err(e)
         }
-    };
+    }
 }
