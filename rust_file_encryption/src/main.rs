@@ -8,15 +8,13 @@ fn main() {
     match inputFileContentsResult {
         Ok(f) => {
             inputFileContents = f;
-            println!("File opened successfully: {:?}", inputFileContents);
+            println!("File opened successfully with contents: {}", inputFileContents);
         }
         Err(e) => {
             println!("Error opening file: {}. Exiting program.", e);
             return;
         }
     }
-
-    let cipher : Chars = "0xexcellentParade".chars();
 
     let outputFileResult = createOutputFile();
     let outputFile : File;
@@ -31,9 +29,30 @@ fn main() {
             return;
         }
     }
+
+    let cipher : String = "0xexcellentParade".to_string();
+    let encryptedContents : String = encrpyt(inputFileContents.clone(), cipher.clone());
+    let unencryptedContents : String = encrpyt(encryptedContents.clone(), cipher.clone());
+
+    if unencryptedContents == inputFileContents {
+        println!("Encryption and decryption successful. Unencrypted contents match original contents.");
+    } else {
+        println!("Encryption and decryption failed. Unencrypted contents do not match original contents.");
+    }
+
 }
 
-fn createOutputFile() -> io::Result<File> {
+fn encrpyt(text : String, key: String) -> String {
+    let cipher : Vec<char> = key.chars().collect();
+    let encryptedContents : Vec<char> = text.chars().enumerate().map(|(i, c)| {
+        let cipherChar = cipher[i % cipher.len()];
+        let encryptedChar = (c as u8) ^ (cipherChar as u8);
+        encryptedChar as char
+    }).collect();
+    encryptedContents.into_iter().collect()
+}
+
+fn createOutputFile() -> Result<File> {
     let mut outputFilePath = String::from("data/encrypted/");
     println!("Enter path for output file. Note that paths start from data/encrypted/:");
     let outputFilePathResult : io::Result<usize> = stdin().read_line(&mut outputFilePath);
@@ -59,7 +78,7 @@ fn createOutputFile() -> io::Result<File> {
     }
 }
 
-fn getInputFileContents() -> io::Result<String> {
+fn getInputFileContents() -> Result<String> {
     let mut inputFilePath = String::from("data/raw/");
     println!("Enter path for file one. Note that paths start from data/raw/:");
     let inputFilePathResult : io::Result<usize> = stdin().read_line(&mut inputFilePath);
