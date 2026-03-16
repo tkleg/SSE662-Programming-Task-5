@@ -1,14 +1,13 @@
-use std::io::{self, Error, Result, stdin};
+use std::io::{self, Result, stdin};
 use std::fs::{self, File};
-use std::str::Chars;
 
 fn main() {
-    let inputFileContentsResult = getInputFileContents();
-    let inputFileContents : String;
-    match inputFileContentsResult {
+    let input_file_contents_result = get_input_file_contents();
+    let input_file_contents : String;
+    match input_file_contents_result {
         Ok(f) => {
-            inputFileContents = f;
-            println!("File opened successfully with contents: {}", inputFileContents);
+            input_file_contents = f;
+            println!("File opened successfully with contents: {}", input_file_contents);
         }
         Err(e) => {
             println!("Error opening file: {}. Exiting program.", e);
@@ -16,13 +15,13 @@ fn main() {
         }
     }
 
-    let outputFileResult = createOutputFile();
-    let outputFile : File;
+    let output_file_result = create_output_file();
+    let output_file : File;
 
-    match outputFileResult {
+    match output_file_result {
         Ok(f) => {
-            outputFile = f;
-            println!("File created successfully: {:?}", outputFile);
+            output_file = f;
+            println!("File created successfully: {:?}", output_file);
         }
         Err(e) => {
             println!("Error creating file: {}. Exiting program.", e);
@@ -31,10 +30,10 @@ fn main() {
     }
 
     let cipher : String = "0xexcellentParade".to_string();
-    let encryptedContents : Vec<u8> = encrpyt(inputFileContents.as_bytes(), cipher.as_bytes());
-    let unencryptedContents : Vec<u8> = encrpyt(&encryptedContents, cipher.as_bytes());
+    let encrypted_contents : Vec<u8> = encrpyt(input_file_contents.as_bytes(), cipher.as_bytes());
+    let unencrypted_contents : Vec<u8> = encrpyt(&encrypted_contents, cipher.as_bytes());
 
-    if unencryptedContents == inputFileContents.as_bytes() {
+    if unencrypted_contents == input_file_contents.as_bytes() {
         println!("Encryption and decryption successful. Unencrypted contents match original contents.");
     } else {
         println!("Encryption and decryption failed. Unencrypted contents do not match original contents.");
@@ -44,21 +43,21 @@ fn main() {
 
 fn encrpyt(text : &[u8], key: &[u8]) -> Vec<u8> {
     let cipher : Vec<u8> = key.to_vec();
-    let encryptedContents : Vec<u8> = text.iter().enumerate().map(|(i, &c)| {
-        let cipherChar = cipher[i % cipher.len()];
-        let encryptedChar = (c as u8) ^ (cipherChar as u8);
-        encryptedChar as u8
+    let encrypted_contents : Vec<u8> = text.iter().enumerate().map(|(i, &c)| {
+        let cipher_char = cipher[i % cipher.len()];
+        let encrypted_char = (c as u8) ^ (cipher_char as u8);
+        encrypted_char as u8
     }).collect();
-    encryptedContents.into_iter().collect()
+    encrypted_contents.into_iter().collect()
 }
 
-fn createOutputFile() -> Result<File> {
-    let mut outputFilePath = String::from("data/encrypted/");
+fn create_output_file() -> Result<File> {
+    let mut output_file_path = String::from("data/encrypted/");
     println!("Enter path for output file. Note that paths start from data/encrypted/:");
-    let outputFilePathResult : io::Result<usize> = stdin().read_line(&mut outputFilePath);
-    match outputFilePathResult {
+    let output_file_path_result : io::Result<usize> = stdin().read_line(&mut output_file_path);
+    match output_file_path_result {
         Ok(_) => {
-            println!("Output File Path: {}", outputFilePath.trim());
+            println!("Output File Path: {}", output_file_path.trim());
         }
         Err(e) => {
             println!("Cannot read input: {}", e);
@@ -66,25 +65,25 @@ fn createOutputFile() -> Result<File> {
         }
     }
 
-    match File::create(outputFilePath.trim()) {
+    match File::create(output_file_path.trim()) {
         Ok(file) => {
-            println!("createOutputFile created file with path {} successfully", outputFilePath.trim());
+            println!("createOutputFile created file with path {} successfully", output_file_path.trim());
             Ok(file)
         }
         Err(e) => {
-            println!("createOutputFile cannot create file with path {}: {}", outputFilePath.trim(), e);
+            println!("createOutputFile cannot create file with path {}: {}", output_file_path.trim(), e);
             Err(e)
         }
     }
 }
 
-fn getInputFileContents() -> Result<String> {
-    let mut inputFilePath = String::from("data/raw/");
+fn get_input_file_contents() -> Result<String> {
+    let mut input_file_path = String::from("data/raw/");
     println!("Enter path for file one. Note that paths start from data/raw/:");
-    let inputFilePathResult : io::Result<usize> = stdin().read_line(&mut inputFilePath);
-    match inputFilePathResult {
+    let input_file_path_result : io::Result<usize> = stdin().read_line(&mut input_file_path);
+    match input_file_path_result {
         Ok(_) => {
-            println!("File Path: {}", inputFilePath.trim());
+            println!("File Path: {}", input_file_path.trim());
         }
         Err(e) => {
             println!("Cannot read input: {}", e);
@@ -92,13 +91,13 @@ fn getInputFileContents() -> Result<String> {
         }
     }
 
-    match fs::read_to_string(inputFilePath.trim()) {
+    match fs::read_to_string(input_file_path.trim()) {
         Ok(content) => {
-            println!("getInputFileContents opened file with path {} successfully", inputFilePath.trim());
+            println!("getInputFileContents opened file with path {} successfully", input_file_path.trim());
             Ok(content)
         }
         Err(e) => {
-            println!("getInputFileContents cannot open file with path {}: {}", inputFilePath.trim(), e);
+            println!("getInputFileContents cannot open file with path {}: {}", input_file_path.trim(), e);
             Err(e)
         }
     }
