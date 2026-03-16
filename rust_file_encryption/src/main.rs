@@ -1,15 +1,28 @@
 use std::io;
+use std::fs::File;
 
 fn main() {
-    let mut input = String::new();
-    println!("Enter a string:");
-    let result : io::Result<usize> = io::stdin().read_line(&mut input);
-    match result {
+    let mut inputFilePath = String::from("data/raw/");
+    println!("Enter path for file one. Note that paths start from data/raw/:");
+    let inputFilePathResult : io::Result<usize> = io::stdin().read_line(&mut inputFilePath);
+    match inputFilePathResult {
         Ok(_) => {
-            println!("string: {}", input.trim());
+            println!("File Path: {}", inputFilePath.trim());
         }
         Err(e) => {
-            eprintln!("Error reading input: {}", e);
+            println!("Cannot read input: {}", e);
+            return;
         }
     }
+
+    let f1 : File = match File::open(inputFilePath.trim()) {
+        Ok(file) => {
+            println!("File opened successfully");
+            file
+        }
+        Err(e) => {
+            println!("Cannot open file: {}. Path {}", e, inputFilePath.trim());
+            return;
+        }
+    };
 }
