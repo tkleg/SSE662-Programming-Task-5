@@ -35,11 +35,11 @@ mod tests {
     }
 
     #[test]
-    fn test_encrypt_with_long_text() {
-        let text = b"piughutewrbcipuwqewfvyighewbfvyunjeqiwbgvyrbfvuy4eryubgv3trbv40uqwbf807gbvru0ebgve8r92hgv4r9ueoi2nv3rhbvoiseqwnviuo3b2neufbvouewbguifwqask;lwbtv-9ugb";
-        let key = b"fejifbvfouiec";
-        let encrypted = encrypt(text, key);
-        let decrypted = encrypt(&encrypted, key);
+    fn test_encrypt_with_long_text_and_long_key() {
+        let text = b";e0r9f0elwbtv-9ugb".repeat(852);
+        let key = b"fejifbvfouiec".repeat(56);
+        let encrypted = encrypt(&text, &key);
+        let decrypted = encrypt(&encrypted, &key);
         assert_eq!(decrypted, text);
     }
 }
