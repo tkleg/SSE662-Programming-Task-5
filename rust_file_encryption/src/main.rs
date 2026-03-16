@@ -114,11 +114,11 @@ fn create_output_file() -> Result<File> {
         .open(output_file_path.trim()) {
             Ok(file) => {
                 println!("createOutputFile created file with path {:?} successfully\n", output_file_path.trim());
-                Ok(file)
+                return Ok(file);
             }
             Err(e) => {
                 println!("createOutputFile cannot create file with path {:?}: {:?}\n", output_file_path.trim(), e);
-                Err(e)
+                return Err(e);
             }
         }
 }
@@ -145,11 +145,11 @@ fn get_input_file_contents() -> Result<String> {
     match fs::read_to_string(input_file_path.trim()) {
         Ok(content) => {
             println!("getInputFileContents opened file with path {:?} successfully\n", input_file_path.trim());
-            Ok(content)
+            return Ok(content);
         }
         Err(e) => {
             println!("getInputFileContents cannot open file with path {:?}: {:?}\n", input_file_path.trim(), e);
-            Err(e)
+            return Err(e);
         }
     }
 }
